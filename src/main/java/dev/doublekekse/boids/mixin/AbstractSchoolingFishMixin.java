@@ -18,7 +18,7 @@ public abstract class AbstractSchoolingFishMixin extends AbstractFish {
 
     @Inject(method = "registerGoals", at = @At("HEAD"), cancellable = true)
     protected void registerGoals(CallbackInfo ci) {
-        this.goalSelector.addGoal(5, new BoidGoal((AbstractSchoolingFish) (Object) this, 0.5f, 0.9f, 8 / 20f, 1 / 20f, 49, 58, 0.3f, 0.8f));
+        this.goalSelector.addGoal(5, new BoidGoal((AbstractSchoolingFish) (Object) this, 0.5f, 0.9f, 8 / 20f, 1 / 20f, 49, 58, 50, 0.3f, 0.8f));
 
         ci.cancel();
     }
