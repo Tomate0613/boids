@@ -5,41 +5,50 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 public class BoidGoal extends Goal {
-    public final float SEPARATION_INFLUENCE;
-    public final float SEPARATION_RANGE;
-    public final float ALIGNMENT_INFLUENCE;
-    public final float COHESION_INFLUENCE;
+    public static final Logger LOGGER = LogManager.getLogger();
 
-    public final float MIN_HEIGHT;
-    public final float MAX_HEIGHT;
+    public final float separationInfluence;
+    public final float separationRange;
+    public final float alignmentInfluence;
+    public final float cohesionInfluence;
 
-    public final float MIN_SPEED;
-    public final float MAX_SPEED;
+    public final float minHeight;
+    public final float maxHeight;
+
+    public final float minSpeed;
+    public final float maxSpeed;
+
+    public Vec3 spawnPosition;
+    public final float sqrRadiusFromSpawn;
 
 
     private final Mob mob;
     private int timeToRecalculatePath;
     List<? extends Mob> nearbyMobs;
+    private boolean enabled = true;
 
-    public BoidGoal(Mob mob, float separationInfluence, float separationRange, float alignmentInfluence, float cohesionInfluence, float minHeight, float maxHeight, float minSpeed, float maxSpeed) {
+    public BoidGoal(Mob mob, float separationInfluence, float separationRange, float alignmentInfluence, float cohesionInfluence, float minHeight, float maxHeight, float radiusFromSpawn, float minSpeed, float maxSpeed) {
         this.mob = mob;
         timeToRecalculatePath = 0;
 
-        SEPARATION_INFLUENCE = separationInfluence;
-        SEPARATION_RANGE = separationRange;
-        ALIGNMENT_INFLUENCE = alignmentInfluence;
-        COHESION_INFLUENCE = cohesionInfluence;
+        this.separationInfluence = separationInfluence;
+        this.separationRange = separationRange;
+        this.alignmentInfluence = alignmentInfluence;
+        this.cohesionInfluence = cohesionInfluence;
 
-        MIN_HEIGHT = minHeight;
-        MAX_HEIGHT = maxHeight;
+        this.minHeight = minHeight;
+        this.maxHeight = maxHeight;
 
-        MIN_SPEED = minSpeed;
-        MAX_SPEED = maxSpeed;
+        this.minSpeed = minSpeed;
+        this.maxSpeed = maxSpeed;
+        this.sqrRadiusFromSpawn = radiusFromSpawn * radiusFromSpawn;
     }
 
     @Override
@@ -48,13 +57,23 @@ public class BoidGoal extends Goal {
     }
 
     public void tick() {
+        if(spawnPosition == null) {
+            // This is not necessarily at the spawn, but it should be at least close to it most of the time
+            spawnPosition = mob.position();
+        }
+
+        if (!enabled) {
+            return;
+        }
+
         if (--this.timeToRecalculatePath <= 0) {
             this.timeToRecalculatePath = this.adjustedTickDelay(40);
             nearbyMobs = getNearbyEntitiesOfSameClass(mob);
         }
 
         if (nearbyMobs.isEmpty()) {
-            throw new Error("No nearby entities found. There should always be at least the entity itself");
+            LOGGER.warn("No nearby entities found. There should always be at least the entity itself. Will disable behavior for this entity instead of crash for compatibility reasons");
+            enabled = false;
         }
 
         mob.addDeltaMovement(random());
@@ -66,10 +85,10 @@ public class BoidGoal extends Goal {
         var velocity = mob.getDeltaMovement();
         var speed = velocity.length();
 
-        if (speed < MIN_SPEED)
-            velocity = velocity.normalize().scale(MIN_SPEED);
-        if (speed > MAX_SPEED)
-            velocity = velocity.normalize().scale(MAX_SPEED);
+        if (speed < minSpeed)
+            velocity = velocity.normalize().scale(minSpeed);
+        if (speed > maxSpeed)
+            velocity = velocity.normalize().scale(maxSpeed);
 
         mob.setDeltaMovement(velocity);
         mob.lookAt(EntityAnchorArgument.Anchor.EYES, mob.position().add(velocity.scale(3)));
@@ -91,9 +110,9 @@ public class BoidGoal extends Goal {
     }
 
     public int randomSign() {
-        var u = mob.getRandom().nextBoolean();
+        var isNegative = mob.getRandom().nextBoolean();
 
-        if(u) {
+        if (isNegative) {
             return -1;
         }
 
@@ -101,6 +120,15 @@ public class BoidGoal extends Goal {
     }
 
     public Vec3 bounds() {
+        var diffX = mob.getX() - spawnPosition.x;
+        var diffZ = mob.getZ() - spawnPosition.z;
+
+        var distanceToSpawn = diffX * diffX + diffZ * diffZ;
+        if (distanceToSpawn > sqrRadiusFromSpawn) {
+            return new Vec3(-diffX, 0, -diffZ).scale(0.2);
+        }
+
+
         var amount = 0.1;
         var dY = Mth.abs((float) mob.getDeltaMovement().y);
 
@@ -108,10 +136,10 @@ public class BoidGoal extends Goal {
             amount = dY;
         }
 
-        if (mob.getY() > MAX_HEIGHT) {
+        if (mob.getY() > maxHeight) {
             return new Vec3(0, -amount, 0);
         }
-        if (mob.getY() < MIN_HEIGHT)
+        if (mob.getY() < minHeight)
             return new Vec3(0, amount, 0);
 
         return Vec3.ZERO;
@@ -121,12 +149,12 @@ public class BoidGoal extends Goal {
         var c = Vec3.ZERO;
 
         for (Mob nearbyMob : nearbyMobs) {
-            if ((nearbyMob.position().subtract(mob.position()).length()) < SEPARATION_RANGE && !nearbyMob.isDeadOrDying()) {
+            if ((nearbyMob.position().subtract(mob.position()).length()) < separationRange && !nearbyMob.isDeadOrDying()) {
                 c = c.subtract(nearbyMob.position().subtract(mob.position()));
             }
         }
 
-        return c.scale(SEPARATION_INFLUENCE);
+        return c.scale(separationInfluence);
     }
 
     public Vec3 alignment() {
@@ -139,7 +167,7 @@ public class BoidGoal extends Goal {
 
         c = c.scale(1f / nearbyMobs.size());
         c = c.subtract(mob.getDeltaMovement());
-        return c.scale(ALIGNMENT_INFLUENCE);
+        return c.scale(alignmentInfluence);
     }
 
     public Vec3 cohesion() {
@@ -152,6 +180,6 @@ public class BoidGoal extends Goal {
 
         c = c.scale(1f / nearbyMobs.size());
         c = c.subtract(mob.position());
-        return c.scale(COHESION_INFLUENCE);
+        return c.scale(cohesionInfluence);
     }
 }
