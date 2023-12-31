@@ -1,6 +1,5 @@
 package dev.doublekekse.boids.goals;
 
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -18,37 +17,19 @@ public class BoidGoal extends Goal {
     public final float separationRange;
     public final float alignmentInfluence;
     public final float cohesionInfluence;
-
-    public final float minHeight;
-    public final float maxHeight;
-
-    public final float minSpeed;
-    public final float maxSpeed;
-
-    public Vec3 spawnPosition;
-    public final float sqrRadiusFromSpawn;
-
-
     private final Mob mob;
-    private int timeToRecalculatePath;
+    private int timeToFindNearbyEntities;
     List<? extends Mob> nearbyMobs;
     private boolean enabled = true;
 
-    public BoidGoal(Mob mob, float separationInfluence, float separationRange, float alignmentInfluence, float cohesionInfluence, float minHeight, float maxHeight, float radiusFromSpawn, float minSpeed, float maxSpeed) {
-        this.mob = mob;
-        timeToRecalculatePath = 0;
+    public BoidGoal(Mob mob, float separationInfluence, float separationRange, float alignmentInfluence, float cohesionInfluence) {
+        timeToFindNearbyEntities = 0;
 
+        this.mob = mob;
         this.separationInfluence = separationInfluence;
         this.separationRange = separationRange;
         this.alignmentInfluence = alignmentInfluence;
         this.cohesionInfluence = cohesionInfluence;
-
-        this.minHeight = minHeight;
-        this.maxHeight = maxHeight;
-
-        this.minSpeed = minSpeed;
-        this.maxSpeed = maxSpeed;
-        this.sqrRadiusFromSpawn = radiusFromSpawn * radiusFromSpawn;
     }
 
     @Override
@@ -57,17 +38,12 @@ public class BoidGoal extends Goal {
     }
 
     public void tick() {
-        if(spawnPosition == null) {
-            // This is not necessarily at the spawn, but it should be at least close to it most of the time
-            spawnPosition = mob.position();
-        }
-
         if (!enabled) {
             return;
         }
 
-        if (--this.timeToRecalculatePath <= 0) {
-            this.timeToRecalculatePath = this.adjustedTickDelay(40);
+        if (--this.timeToFindNearbyEntities <= 0) {
+            this.timeToFindNearbyEntities = this.adjustedTickDelay(40);
             nearbyMobs = getNearbyEntitiesOfSameClass(mob);
         }
 
@@ -80,18 +56,6 @@ public class BoidGoal extends Goal {
         mob.addDeltaMovement(cohesion());
         mob.addDeltaMovement(alignment());
         mob.addDeltaMovement(separation());
-        mob.addDeltaMovement(bounds());
-
-        var velocity = mob.getDeltaMovement();
-        var speed = velocity.length();
-
-        if (speed < minSpeed)
-            velocity = velocity.normalize().scale(minSpeed);
-        if (speed > maxSpeed)
-            velocity = velocity.normalize().scale(maxSpeed);
-
-        mob.setDeltaMovement(velocity);
-        mob.lookAt(EntityAnchorArgument.Anchor.EYES, mob.position().add(velocity.scale(3)));
     }
 
     public static List<? extends Mob> getNearbyEntitiesOfSameClass(Mob mob) {
@@ -117,32 +81,6 @@ public class BoidGoal extends Goal {
         }
 
         return 1;
-    }
-
-    public Vec3 bounds() {
-        var diffX = mob.getX() - spawnPosition.x;
-        var diffZ = mob.getZ() - spawnPosition.z;
-
-        var distanceToSpawn = diffX * diffX + diffZ * diffZ;
-        if (distanceToSpawn > sqrRadiusFromSpawn) {
-            return new Vec3(-diffX, 0, -diffZ).scale(0.2);
-        }
-
-
-        var amount = 0.1;
-        var dY = Mth.abs((float) mob.getDeltaMovement().y);
-
-        if (dY > amount) {
-            amount = dY;
-        }
-
-        if (mob.getY() > maxHeight) {
-            return new Vec3(0, -amount, 0);
-        }
-        if (mob.getY() < minHeight)
-            return new Vec3(0, amount, 0);
-
-        return Vec3.ZERO;
     }
 
     public Vec3 separation() {
