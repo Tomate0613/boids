@@ -1,6 +1,7 @@
 package dev.doublekekse.boids.goals;
 
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
@@ -45,6 +46,8 @@ public class BoidGoal extends Goal {
         if (--this.timeToFindNearbyEntities <= 0) {
             this.timeToFindNearbyEntities = this.adjustedTickDelay(40);
             nearbyMobs = getNearbyEntitiesOfSameClass(mob);
+        } else {
+            nearbyMobs.removeIf(LivingEntity::isDeadOrDying);
         }
 
         if (nearbyMobs.isEmpty()) {
@@ -87,7 +90,7 @@ public class BoidGoal extends Goal {
         var c = Vec3.ZERO;
 
         for (Mob nearbyMob : nearbyMobs) {
-            if ((nearbyMob.position().subtract(mob.position()).length()) < separationRange && !nearbyMob.isDeadOrDying()) {
+            if ((nearbyMob.position().subtract(mob.position()).length()) < separationRange) {
                 c = c.subtract(nearbyMob.position().subtract(mob.position()));
             }
         }
@@ -99,8 +102,7 @@ public class BoidGoal extends Goal {
         var c = Vec3.ZERO;
 
         for (Mob nearbyMob : nearbyMobs) {
-            if (!nearbyMob.isDeadOrDying())
-                c = c.add(nearbyMob.getDeltaMovement());
+            c = c.add(nearbyMob.getDeltaMovement());
         }
 
         c = c.scale(1f / nearbyMobs.size());
@@ -112,8 +114,7 @@ public class BoidGoal extends Goal {
         var c = Vec3.ZERO;
 
         for (Mob nearbyMob : nearbyMobs) {
-            if (!nearbyMob.isDeadOrDying())
-                c = c.add(nearbyMob.position());
+            c = c.add(nearbyMob.position());
         }
 
         c = c.scale(1f / nearbyMobs.size());
