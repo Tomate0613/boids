@@ -1,6 +1,5 @@
 package dev.doublekekse.boids.mixin;
 
-import dev.doublekekse.boids.Boids;
 import dev.doublekekse.boids.goals.BoidGoal;
 import dev.doublekekse.boids.goals.LimitSpeedAndLookInVelocityDirectionGoal;
 import dev.doublekekse.boids.goals.StayInWaterGoal;
