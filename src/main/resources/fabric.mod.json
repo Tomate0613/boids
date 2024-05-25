@@ -2,22 +2,25 @@
   "schemaVersion": 1,
   "id": "boids",
   "version": "${version}",
-
   "name": "Boids",
   "description": "",
   "authors": [],
   "contact": {},
-
   "license": "MIT",
   "icon": "assets/boids/icon.png",
-
   "environment": "*",
-  "entrypoints": {},
-
-  "mixins": ["boids.mixins.json"],
-
+  "entrypoints": {
+    "main": [
+      "dev.doublekekse.boids.Boids"
+    ]
+  },
+  "mixins": [
+    "boids.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": "${minecraft_version}"
+    "minecraft": "${minecraft_version}",
+
+    "fabric": "*"
   }
 }
