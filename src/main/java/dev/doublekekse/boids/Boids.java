@@ -1,6 +1,5 @@
 package dev.doublekekse.boids;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.doublekekse.boids.config.BoidsConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
