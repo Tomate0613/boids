@@ -24,12 +24,12 @@ public class StayInWaterGoal extends Goal {
         var blockBelow = mob.level().getBlockState(blockPos.below(1));
         var amount = amount();
 
-        if(blockAbove.getFluidState().isEmpty()) {
-            mob.addDeltaMovement(new Vec3(0, -amount, 0));
-        }
-
         if(blockBelow.getFluidState().isEmpty()) {
             mob.addDeltaMovement(new Vec3(0, amount, 0));
+        }
+
+        if(blockAbove.getFluidState().isEmpty()) {
+            mob.addDeltaMovement(new Vec3(0, -amount, 0));
         }
     }
 
