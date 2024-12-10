@@ -4,7 +4,8 @@
   "package": "dev.doublekekse.boids.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "AbstractSchoolingFishMixin"
+    "AbstractSchoolingFishMixin",
+    "compat.RealFishingMixin"
   ],
   "client": [],
   "injectors": {

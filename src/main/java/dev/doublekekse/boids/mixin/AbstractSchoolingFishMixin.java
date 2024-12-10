@@ -1,5 +1,6 @@
 package dev.doublekekse.boids.mixin;
 
+import dev.doublekekse.boids.Boids;
 import dev.doublekekse.boids.goals.BoidGoal;
 import dev.doublekekse.boids.goals.LimitSpeedAndLookInVelocityDirectionGoal;
 import dev.doublekekse.boids.goals.StayInWaterGoal;
@@ -24,8 +25,13 @@ public abstract class AbstractSchoolingFishMixin extends AbstractFish {
     protected void registerGoals(CallbackInfo ci) {
         var type = this.getType().toString();
 
-        if(CONFIG.excludeEntities.contains(type))
+        if (CONFIG.excludeEntities.contains(type)) {
             return;
+        }
+
+        if (Boids.disabled) {
+            return;
+        }
 
         this.goalSelector.addGoal(5, new BoidGoal(this, CONFIG.separationInfluence, CONFIG.separationRange, CONFIG.alignmentInfluence, CONFIG.cohesionInfluence));
         this.goalSelector.addGoal(3, new StayInWaterGoal(this));
