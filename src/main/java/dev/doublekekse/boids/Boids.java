@@ -10,6 +10,12 @@ import static net.minecraft.commands.Commands.literal;
 public class Boids implements ModInitializer {
     public static BoidsConfig CONFIG = BoidsConfig.load();
 
+    /**
+     * True, when the mod is temporarily enabled for compat reasons
+     * TODO: Replace this with a proper solution
+     */
+    public static boolean disabled = false;
+
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register(
