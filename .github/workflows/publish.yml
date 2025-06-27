@@ -31,21 +31,10 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          modrinth-id: crqH8IT5
+          modrinth-id: 2OckSy74
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          modrinth-dependencies: |
-            fabric-api
-            connectiblechains (optional)
-            hyphapiracea (optional)
-            vivatech (optional)
-
-          curseforge-id: 1182075
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
 
           dependencies: |
             fabric-api
-            connectiblechains (optional)
 
           version-type: release
