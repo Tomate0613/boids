@@ -32,10 +32,10 @@ public class BoidsConfig {
 
     @Comment("Speed limits")
     public float minSpeed = 0.2f;
-    public float maxSpeed = 0.5f;
+    public float maxSpeed = 0.3f;
 
     @Comment("Random influence")
-    public float randomness = 0.002f;
+    public float randomness = 0.005f;
 
     public enum DefaultEntities {
         DEFAULT(List.of(EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH)),
