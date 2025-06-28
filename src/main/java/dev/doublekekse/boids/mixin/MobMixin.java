@@ -5,10 +5,11 @@ import dev.doublekekse.boids.NearbyMobTracker;
 import dev.doublekekse.boids.duck.MobDuck;
 import dev.doublekekse.boids.goals.LimitSpeedAndLookInVelocityDirectionGoal;
 import dev.doublekekse.boids.goals.StayInWaterGoal;
+import net.minecraft.advancements.critereon.EntityTypePredicate;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,6 +26,9 @@ public abstract class MobMixin extends LivingEntity implements MobDuck {
     Goal boids$stayInWaterGoal;
     @Unique
     Goal boids$limitSpeedGoal;
+
+    @Unique
+    private static final EntityTypePredicate IS_WATER_MOB = EntityTypePredicate.of(EntityTypeTags.AQUATIC);
 
     protected MobMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
@@ -59,7 +63,7 @@ public abstract class MobMixin extends LivingEntity implements MobDuck {
 
     @Override
     public void boids$enable() {
-        if (getMobType() == MobType.WATER) {
+        if (IS_WATER_MOB.matches(getType())) {
             boids$stayInWaterGoal = new StayInWaterGoal((Mob) (Object) this);
         }
 
