@@ -22,11 +22,11 @@ public class BoidGoal extends Goal {
         this(mob, new BoidsSimulation(
             separationInfluence,
             separationRange,
-            (float) (2 * Math.PI),
+            Float.NEGATIVE_INFINITY,
             alignmentInfluence,
-            (float) (2 * Math.PI),
+            Float.NEGATIVE_INFINITY,
             cohesionInfluence,
-            (float) (2f * Math.PI),
+            Float.NEGATIVE_INFINITY,
             0.04f
         ));
     }
