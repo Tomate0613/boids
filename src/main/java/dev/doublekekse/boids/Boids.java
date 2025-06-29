@@ -3,6 +3,7 @@ package dev.doublekekse.boids;
 import dev.doublekekse.boids.config.BoidsConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -53,6 +54,9 @@ public class Boids implements ModInitializer {
             .map(ResourceLocation::tryParse)
             .filter(Objects::nonNull)
             .map(BuiltInRegistries.ENTITY_TYPE::get)
+            .filter(Optional::isPresent)
+            .map(Optional::orElseThrow)
+            .map(Holder.Reference::value)
             .toList();
     }
 
