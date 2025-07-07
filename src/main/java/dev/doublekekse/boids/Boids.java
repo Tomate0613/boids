@@ -4,6 +4,7 @@ import dev.doublekekse.boids.config.BoidsConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.core.Holder;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -66,7 +67,7 @@ public class Boids implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        loadConfig();
+        ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> loadConfig());
 
         CommandRegistrationCallback.EVENT.register(
             (dispatcher, registryAccess, environment) -> {
