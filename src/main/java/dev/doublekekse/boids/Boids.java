@@ -53,7 +53,9 @@ public class Boids implements ModInitializer {
         return ids.stream()
             .map(ResourceLocation::tryParse)
             .filter(Objects::nonNull)
-            .map(BuiltInRegistries.ENTITY_TYPE::get)
+            .map(BuiltInRegistries.ENTITY_TYPE::getOptional)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .toList();
     }
 
