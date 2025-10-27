@@ -1,9 +1,0 @@
-eclipse.preferences.version=1
-org.eclipse.jdt.apt.aptEnabled=true
-org.eclipse.jdt.apt.genSrcDir=bin/generated-sources/annotations
-org.eclipse.jdt.apt.genTestSrcDir=bin/generated-test-sources/annotations
-org.eclipse.jdt.apt.processorOptions/defaultObfuscationEnv=named\:intermediary
-org.eclipse.jdt.apt.processorOptions/inMapFileNamedIntermediary=/home/tomate/.gradle/caches/fabric-loom/1.21.2/loom.mappings.1_21_2.layered+hash.2198-v2/mappings.tiny
-org.eclipse.jdt.apt.processorOptions/outMapFileNamedIntermediary=/home/tomate/Documents/mods/boids/build/loom-cache/mixin-map-loom.mappings.1_21_2.layered+hash.2198-v2.main.tiny
-org.eclipse.jdt.apt.processorOptions/outRefMapFile=/home/tomate/Documents/mods/boids/build/classes/java/main/Boids-refmap.json
-org.eclipse.jdt.apt.processorOptions/quiet=true
