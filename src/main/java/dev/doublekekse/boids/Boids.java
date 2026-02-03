@@ -3,11 +3,12 @@ package dev.doublekekse.boids;
 import dev.doublekekse.boids.config.BoidsConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.Holder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
@@ -52,7 +53,7 @@ public class Boids implements ModInitializer {
 
     private static Collection<? extends EntityType<?>> getEntities(List<String> ids) {
         return ids.stream()
-            .map(ResourceLocation::tryParse)
+            .map(Identifier::tryParse)
             .filter(Objects::nonNull)
             .map(BuiltInRegistries.ENTITY_TYPE::get)
             .filter(Optional::isPresent)
@@ -72,7 +73,7 @@ public class Boids implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(
             (dispatcher, registryAccess, environment) -> {
                 dispatcher.register(
-                    literal("boids").requires((source) -> source.hasPermission(2)).then(literal("config").then(literal("reload").executes(ctx -> {
+                    literal("boids").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)).then(literal("config").then(literal("reload").executes(ctx -> {
                         loadConfig();
 
                         ctx.getSource().sendSuccess(() -> Component.translatable("commands.boids.config.reload"), true);
