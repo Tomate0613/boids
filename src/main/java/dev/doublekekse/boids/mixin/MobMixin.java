@@ -58,7 +58,7 @@ public abstract class MobMixin extends LivingEntity implements MobDuck {
 
     @Override
     public void boids$enable() {
-        if (getType().is(EntityTypeTags.AQUATIC)) {
+        if (is(EntityTypeTags.AQUATIC)) {
             boids$stayInWaterGoal = new StayInWaterGoal((Mob) (Object) this);
         }
 
