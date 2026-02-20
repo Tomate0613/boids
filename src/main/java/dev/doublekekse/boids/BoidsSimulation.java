@@ -1,5 +1,6 @@
 package dev.doublekekse.boids;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 
@@ -22,7 +23,7 @@ public record BoidsSimulation(
         return (float) Math.cos(Math.toRadians(angle));
     }
 
-    public Vec3 apply(Mob mob, List<? extends Mob> nearbyMobs) {
+    public Vec3 apply(Mob mob, List<? extends Entity> nearbyMobs) {
         var separation = Vec3.ZERO;
         var alignment = Vec3.ZERO;
         var cohesion = Vec3.ZERO;
@@ -32,7 +33,7 @@ public record BoidsSimulation(
         int alignmentCount = 0;
         int cohesionCount = 0;
 
-        for (Mob other : nearbyMobs) {
+        for (Entity other : nearbyMobs) {
             if (mob == other) continue;
 
             var delta = other.position().subtract(mob.position());
