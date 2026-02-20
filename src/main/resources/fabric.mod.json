@@ -21,6 +21,6 @@
     "fabricloader": ">=${loader_version}",
     "minecraft": "1.20.x",
 
-    "fabric": "*"
+    "fabric-api": "*"
   }
 }
