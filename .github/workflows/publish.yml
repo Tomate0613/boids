@@ -27,10 +27,6 @@ jobs:
       - name: build
         run: |
           ./gradlew build
-      - name: attest build provenance
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-path: 'build/libs/*.jar, !build/libs/*-sources.jar'
       - name: publish
         if: ${{ runner.os == 'Linux' }}
         uses: Kir-Antipov/mc-publish@v3.3
