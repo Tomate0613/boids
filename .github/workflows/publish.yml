@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         java: [ 25 ]
-        os: [ ubuntu-24.04 ]
+        os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout repository
@@ -27,6 +27,10 @@ jobs:
       - name: build
         run: |
           ./gradlew build
+      - name: attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'build/libs/*.jar, !build/libs/*-sources.jar'
       - name: publish
         if: ${{ runner.os == 'Linux' }}
         uses: Kir-Antipov/mc-publish@v3.3
