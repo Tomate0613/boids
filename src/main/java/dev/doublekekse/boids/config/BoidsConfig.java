@@ -6,6 +6,7 @@ import blue.endless.jankson.JsonGrammar;
 import blue.endless.jankson.api.SyntaxError;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +39,7 @@ public class BoidsConfig {
     public float randomness = 0.005f;
 
     public enum DefaultEntities {
-        DEFAULT(List.of(EntityType.SALMON, EntityType.COD, EntityType.TROPICAL_FISH)),
+        DEFAULT(List.of(EntityTypes.SALMON, EntityTypes.COD, EntityTypes.TROPICAL_FISH)),
         NONE(Collections.emptyList());
 
         public final Collection<EntityType<?>> types;
