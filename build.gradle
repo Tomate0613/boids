@@ -40,7 +40,7 @@ dependencies {
   implementation "blue.endless:jankson:1.2.3"
   include "blue.endless:jankson:1.2.3"
 
-  compileOnly "maven.modrinth:fishing-real:1.9.1"
+  compileOnly "maven.modrinth:fishing-real:1.10.0"
 }
 
 processResources {

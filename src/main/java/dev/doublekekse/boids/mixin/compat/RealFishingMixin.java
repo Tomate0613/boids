@@ -1,23 +1,26 @@
 package dev.doublekekse.boids.mixin.compat;
 
-import com.llamalad7.mixinextras.sugar.Local;
-import dev.doublekekse.boids.Boids;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import dev.doublekekse.boids.asm.IfMod;
 import dev.doublekekse.boids.duck.MobDuck;
 import koala.fishingreal.FishingReal;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FishingReal.class)
+@IfMod(value = "fishing-real", version = ">=1.10.0")
 public class RealFishingMixin {
-    @Inject(method = "convertItemStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;finalizeSpawn(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/MobSpawnType;Lnet/minecraft/world/entity/SpawnGroupData;)Lnet/minecraft/world/entity/SpawnGroupData;"))
-    private static void enable(ItemStack itemstack, Player player, Vec3 position, CallbackInfoReturnable<Entity> cir, @Local Mob mob) {
-        ((MobDuck) mob).boids$disable();
+    @WrapOperation(method = "convertItemStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityType;create(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/EntitySpawnReason;)Lnet/minecraft/world/entity/Entity;"))
+    @Nullable
+    private static Entity enable(EntityType<Entity> instance, Level level, EntitySpawnReason reason, Operation<Entity> original) {
+        var entity = original.call(instance, level, reason);
+        ((MobDuck) entity).boids$disable();
+        return null;
     }
 }
